@@ -13,19 +13,20 @@ mvn clean install
 
 # Running
 
-# Developing
-
 ## Prerequisites
 
-1. Docker
+This application leverages a database. I use [postgres](https://www.postgresql.org/docs/16/index.html) but technically
+any RDBMS should work. I also opt for using a docker container to run the database. If you have an external database
+to connect to, simply edit the `spring.datasource.url` in the `application.properties` file under `src/main/resources`
+
+The following are the steps to set up running postgres docker container.
+
+### Docker
+
+1. Download Docker desktop.
    On Mac, you can download [Docker desktop](https://docs.docker.com/desktop/release-notes)
 
 ### Database
-
-This application leverages a database. I use [postgres](https://www.postgresql.org/docs/16/index.html) but technically
-any RDBMS with lob support should work.
-
-## Set up
 
 1. Download postgres docker image
    ```
@@ -54,4 +55,16 @@ any RDBMS with lob support should work.
    ```
    You can replace the password with any string, as long as it matches with what is in the `application.properties`
    file under `src/main/resources` directory.
+
+## Running from command line
+To run the application, you can run from IDE or command line:
+```
+mvn spring-boot:run
+```
+
+## Swagger UI
+To access the Swagger API UI, open browser and type in this address:
+```
+https://localhost:8080/swagger-ui.html
+```
 
