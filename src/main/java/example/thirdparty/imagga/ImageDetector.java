@@ -2,6 +2,7 @@ package example.thirdparty.imagga;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -26,11 +27,16 @@ public class ImageDetector {
     @Autowired
     RestClient restClient;
 
-    private static final String IMAGGA_TAGS_API_URL = "https://api.imagga.com/v2/tags";
-    private static final String IMAGGA_UPLOADS_API_URL = "https://api.imagga.com/v2/uploads";
-    private static final String IMAGGA_API_KEY = "acc_f9e4ef8a584451a";
-    private static final String IMAGGA_API_SECRET = "4be1acc56d8cf3344524e5823b5127dc";
-    private static final Double IMAGGA_CONFIDENCE_THRESHOLD = 50.0;
+    @Value("imagga.tagsapi.url")
+    private String tagsApiUrl;
+    @Value("imagga.uploadsapi.url")
+    private String uploadsApiUrl;
+    @Value("imagga.api.key")
+    private String apiKey;
+    @Value("imagga.api.secret")
+    private String apiSecret;
+    @Value("#{new Double('${imagga.confidence.threshold}')}")
+    private Double confidenceThreshold;
 
     public List<String> detect(String imageUrl) {
         TagsResponse response = detectWithUrl(imageUrl);
@@ -66,8 +72,8 @@ public class ImageDetector {
         ResponseEntity<UploadsResponse> uploadsResponseEntity =
                 restClient
                         .post()
-                        .uri(IMAGGA_UPLOADS_API_URL)
-                        .header(HttpHeaders.AUTHORIZATION, encodeBasic(IMAGGA_API_KEY, IMAGGA_API_SECRET))
+                        .uri(uploadsApiUrl)
+                        .header(HttpHeaders.AUTHORIZATION, encodeBasic(apiKey, apiSecret))
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .body(parts)
                         .retrieve()
@@ -85,9 +91,9 @@ public class ImageDetector {
                 .get()
                 // if we ever want to support non-english names, we have to change this and
                 // the @JsonAlias in the Tag class.
-                .uri(IMAGGA_TAGS_API_URL + "?image_url={image_url}&language=en&threshold={confidence}",
-                        imageUrl, IMAGGA_CONFIDENCE_THRESHOLD)
-                .header(HttpHeaders.AUTHORIZATION, encodeBasic(IMAGGA_API_KEY, IMAGGA_API_SECRET))
+                .uri(tagsApiUrl + "?image_url={image_url}&language=en&threshold={confidence}",
+                        imageUrl, confidenceThreshold)
+                .header(HttpHeaders.AUTHORIZATION, encodeBasic(apiKey, apiSecret))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
@@ -104,9 +110,9 @@ public class ImageDetector {
                 .get()
                 // if we ever want to support non-english names, we have to change this and
                 // the @JsonAlias in the Tag class.
-                .uri(IMAGGA_TAGS_API_URL + "?image_upload_id={uploadId}&language=en&threshold={confidence}",
-                        uploadId, IMAGGA_CONFIDENCE_THRESHOLD)
-                .header(HttpHeaders.AUTHORIZATION, encodeBasic(IMAGGA_API_KEY, IMAGGA_API_SECRET))
+                .uri(tagsApiUrl + "?image_upload_id={uploadId}&language=en&threshold={confidence}",
+                        uploadId, confidenceThreshold)
+                .header(HttpHeaders.AUTHORIZATION, encodeBasic(apiKey, apiSecret))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {

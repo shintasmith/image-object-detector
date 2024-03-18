@@ -56,10 +56,24 @@ The following are the steps to set up running postgres docker container.
    You can replace the password with any string, as long as it matches with what is in the `application.properties`
    file under `src/main/resources` directory.
 
+### Imagga API
+
+This application uses [Imagga API](https://imagga.com) for object detection. In order to make this application works,
+you will need a working API key and secret. Get a free API key at  [Imagga API](https://imagga.com).
+
+Then add the api key and secret to the file `application-dev.properties` under `src/main/resources`
+
+You can then run the application with profile `dev`
+
 ## Running from command line
 To run the application, you can run from IDE or command line:
 ```
 mvn spring-boot:run
+```
+
+To run the application with a specific profile, for example: profile `dev`, run:
+```
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 ## Swagger UI
