@@ -12,11 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOError;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ImageServiceTest {
@@ -53,7 +53,7 @@ public class ImageServiceTest {
 
         // verify
         assertEquals(expectedImage, result, "Image objects are the same");
-        verify(imageRepository).save(any(Image.class));
+        verify(imageRepository, times(1)).save(any(Image.class));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ImageServiceTest {
 
         // verify
         assertEquals(expectedImage, result, "Image objects are the same");
-        verify(imageRepository).save(any(Image.class));
+        verify(imageRepository, times(1)).save(any(Image.class));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ImageServiceTest {
         // verify
         assertEquals(expectedImage, result, "Image objects are the same");
         ArgumentCaptor<Image> captor = ArgumentCaptor.forClass(Image.class);
-        verify(imageRepository).save(captor.capture());
+        verify(imageRepository, times(1)).save(captor.capture());
         Image toBeSaved = captor.getValue();
         assertNotNull(toBeSaved.getLabel(), "label is not null");
     }
@@ -130,7 +130,7 @@ public class ImageServiceTest {
         // call the service
         List<Image> images = imageService.getAll();
 
-        verify(imageRepository).findAll();
+        verify(imageRepository, times(1)).findAll();
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ImageServiceTest {
         List<Image> images = imageService.getImagesWithObjects(List.of("cat", "dog"));
 
         // verify
-        verify(imageRepository).findContainingObject(eq(List.of("cat", "dog")));
+        verify(imageRepository, times(1)).findContainingObject(eq(List.of("cat", "dog")));
         assertEquals(1, images.size(), "number of elements result list");
         Image actual = images.get(0);
         assertEquals(expected, actual, "result is the correct image");
@@ -163,13 +163,13 @@ public class ImageServiceTest {
                 .objectDetection(true)
                 .objects(List.of("cat", "bird"))
                 .build();
-        when(imageRepository.getReferenceById(anyLong())).thenReturn(expected);
+        when(imageRepository.findById(anyLong())).thenReturn(Optional.of(expected));
 
         // call the service
         Image result = imageService.getImageById(1L);
 
         // verify
-        verify(imageRepository).getReferenceById(eq(1L));
+        verify(imageRepository, times(1)).findById(eq(1L));
         assertEquals(expected, result, "result is the correct image");
     }
 }
