@@ -1,5 +1,6 @@
 package example.services;
 
+import example.exceptions.ResourceNotFoundException;
 import example.model.Image;
 import example.repositories.ImageRepository;
 import example.thirdparty.imagga.ImageDetector;
@@ -10,6 +11,7 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,7 +35,11 @@ public class ImageService {
     }
 
     public Image getImageById(Long id) {
-        return imageRepository.getReferenceById(id);
+        Optional<Image> optImage = imageRepository.findById(id);
+        if (optImage.isEmpty()) {
+            throw new ResourceNotFoundException(String.format("Image with id %d does not exist", id));
+        }
+        return optImage.get();
     }
 
     public Image add(Image image) throws IOException {
