@@ -27,13 +27,13 @@ public class ImageDetector {
     @Autowired
     RestClient restClient;
 
-    @Value("imagga.tagsapi.url")
+    @Value("${imagga.tagsapi.url}")
     private String tagsApiUrl;
-    @Value("imagga.uploadsapi.url")
+    @Value("${imagga.uploadsapi.url}")
     private String uploadsApiUrl;
-    @Value("imagga.api.key")
+    @Value("${imagga.api.key}")
     private String apiKey;
-    @Value("imagga.api.secret")
+    @Value("${imagga.api.secret}")
     private String apiSecret;
     @Value("#{new Double('${imagga.confidence.threshold}')}")
     private Double confidenceThreshold;

@@ -54,7 +54,7 @@ public class ImageController {
 
     @PostMapping(value = "/images", consumes = "multipart/form-data")
     @RequestBody(content = @Content(encoding = @Encoding(name = "request", contentType = "application/json")))
-    public void add(@RequestPart(value = "request") ImageRequestDTO imageDto,
+    public ImageResponseDTO add(@RequestPart(value = "request") ImageRequestDTO imageDto,
                     @RequestPart(value = "file", required = false) MultipartFile mfile) throws IOException {
 
         Image image = modelMapper.map(imageDto, Image.ImageBuilder.class).build();
@@ -68,6 +68,7 @@ public class ImageController {
                 throw new IllegalArgumentException("Unable to get the contents of image file", ioex);
             }
         }
-        imageService.add(image);
+        Image result = imageService.add(image);
+        return modelMapper.map(result, ImageResponseDTO.ImageResponseDTOBuilder.class).build();
     }
 }
